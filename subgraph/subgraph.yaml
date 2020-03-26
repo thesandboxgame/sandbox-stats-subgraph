@@ -23,5 +23,31 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
+      blockHandlers:
+        - handler: handleBlock
       file: ./src/mapping.ts
-  
+templates:
+  - kind: ethereum/contract
+    name: LandSale
+    network: mainnet
+    source:
+      # address: '0xb2fb1D91325d0211B1Eb39e4CF2C9F3Cf14508b0' # TODO multiple time 
+      abi: LandSaleContract
+      # startBlock: 9048219
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - LandPurchase
+        - LandReferral
+      abis:
+        - name: LandSaleContract
+          file: ./abis/LandSaleContract.json
+      eventHandlers:
+        - event: LandQuadPurchased(indexed address,indexed address,indexed uint256,uint256,uint256,address,uint256)
+          handler: handlePurchase
+        - event: ReferralUsed(indexed address,indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleReferral
+      file: ./src/mapping.ts
+    

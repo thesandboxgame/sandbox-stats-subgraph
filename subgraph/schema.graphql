@@ -3,7 +3,29 @@ type Land @entity {
   owner: Bytes!
   x: Int!
   y: Int!
-  mintTime: BigInt!
+  timestamp: BigInt!
   tokenURI: String!
 }
 
+type LandPurchase @entity {
+  id: ID!
+  topLeftX: Int!
+  topLeftY: Int!
+  size: BigInt!
+  buyer: Bytes!
+  to: Bytes!
+  price: BigInt!
+  tokenAddress: Bytes!
+  amountPaid: BigInt!
+  timestamp: BigInt!
+}
+
+type LandReferral @entity {
+  id: ID!
+  referrer: Bytes!
+  referee: Bytes!
+  tokenAddress: Bytes!
+  amount: BigInt!
+  commission: BigInt!
+  commissionRate: BigInt!
+}
