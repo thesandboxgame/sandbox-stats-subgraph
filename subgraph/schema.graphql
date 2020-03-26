@@ -1,0 +1,9 @@
+type Land @entity {
+  id: ID!
+  owner: Bytes!
+  x: Int!
+  y: Int!
+  mintTime: BigInt!
+  tokenURI: String!
+}
+

@@ -1,0 +1,27 @@
+specVersion: 0.0.2
+description: SANDBOX-TOKENS
+repository: https://github.com/wighawag/sandbox-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: EIP721
+    network: mainnet
+    source:
+      address: '0x50f5474724e0Ee42D9a4e711ccFB275809Fd6d4a'
+      abi: EIP721
+      startBlock: 9048219
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - Land
+      abis:
+        - name: EIP721
+          file: ./abis/EIP721.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/mapping.ts
+  
