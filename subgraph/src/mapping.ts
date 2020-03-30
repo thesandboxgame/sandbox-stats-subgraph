@@ -1,7 +1,7 @@
-import { store, Address, Bytes, EthereumValue, BigInt } from '@graphprotocol/graph-ts';
+import { store, Address, Bytes, EthereumValue, BigInt, BigDecimal } from '@graphprotocol/graph-ts';
 import { Transfer, LandContract, Minter } from '../generated/Land/LandContract';
 import { LandSaleContract, ReferralUsed, LandQuadPurchased } from '../generated/LandSale/LandSaleContract';
-import { Land, LandReferral, LandPurchase, PurchaserStat, LandSaleStat, LandSaleReferralStat } from '../generated/schema';
+import { Land, LandReferral, LandPurchase, UserStat, SaleUserStat, LandSaleStat, LandSaleReferralStat } from '../generated/schema';
 
 import { LandSale } from '../generated/templates'
 
@@ -33,33 +33,6 @@ export function handleTransfer(event: Transfer): void {
     }
 }
 
-
-/*
-
-type PurchaserStat @entity {
-  id: ID!
-  numDAIPurchases: Int!
-  numETHPurchases: Int!
-}
-
-type LandSaleStat @entity {
-  id: ID!
-  numDAIPurchases: Int!
-  numETHPurchases: Int!
-  numLandsFromDAIPurchase: Int!
-  numLandsFromETHPurchase: Int!
-  numUniquePurchaser: Int!
-}
-
-type LandSaleReferralStat @entity {
-  id: ID!
-  numDAIPurchases: Int!
-  numETHPurchases: Int!
-  numLandsFromDAIPurchase: Int!
-  numLandsFromETHPurchase: Int!
-  numUniquePurchaser: Int!
-}
-*/
 export function handlePurchase(event: LandQuadPurchased): void {
     let id = event.params.topCornerId.toString();
     let idAsNumber = i32(parseInt(id, 10));
@@ -82,10 +55,10 @@ export function handlePurchase(event: LandQuadPurchased): void {
     let buyerId = event.address.toHex() + '_' + event.params.buyer.toHex();
     let receiverId = event.address.toHex() + '_' + event.params.to.toHex();
 
-    let buyerStat : PurchaserStat | null
-    buyerStat = PurchaserStat.load(buyerId)
+    let buyerStat : SaleUserStat | null
+    buyerStat = SaleUserStat.load(buyerId)
     if (!buyerStat) {
-        buyerStat = new PurchaserStat(buyerId)
+        buyerStat = new SaleUserStat(buyerId)
         buyerStat.numDAILandPurchases = 0;
         buyerStat.numETHLandPurchases = 0;
         buyerStat.numETHLandGiven = 0;
@@ -97,15 +70,15 @@ export function handlePurchase(event: LandQuadPurchased): void {
         buyerStat.numDAILandPurchases ++;
     }
     
-    let receiverStat : PurchaserStat | null
+    let receiverStat : SaleUserStat | null
     if (receiverId == buyerId) {
         receiverStat = buyerStat;
     } else {
         buyerStat.save();
-        receiverStat = PurchaserStat.load(receiverId)
+        receiverStat = SaleUserStat.load(receiverId)
     }
     if (!receiverStat) {
-        receiverStat = new PurchaserStat(receiverId)
+        receiverStat = new SaleUserStat(receiverId)
         receiverStat.numDAILandPurchases = 0;
         receiverStat.numETHLandPurchases = 0;
         receiverStat.numETHLandGiven = 0;
@@ -118,6 +91,43 @@ export function handlePurchase(event: LandQuadPurchased): void {
     }
     receiverStat.save();
 
+
+    let buyerUserStat : UserStat | null
+    buyerUserStat = UserStat.load(event.params.buyer.toHex())
+    if (!buyerUserStat) {
+        buyerUserStat = new UserStat(event.params.buyer.toHex())
+        buyerUserStat.numDAILandPurchases = 0;
+        buyerUserStat.numETHLandPurchases = 0;
+        buyerUserStat.numETHLandGiven = 0;
+        buyerUserStat.numDAILandGiven = 0;
+    }
+    if (event.params.token.toHex() == zeroAddress) {
+        buyerUserStat.numETHLandPurchases ++;
+    } else {
+        buyerUserStat.numDAILandPurchases ++;
+    }
+    
+    let receiverUserStat : UserStat | null
+    if (event.params.to.toHex() == event.params.buyer.toHex()) {
+        receiverUserStat = buyerUserStat;
+    } else {
+        buyerUserStat.save();
+        receiverUserStat = UserStat.load(event.params.to.toHex())
+    }
+    if (!receiverUserStat) {
+        receiverUserStat = new UserStat(event.params.to.toHex())
+        receiverUserStat.numDAILandPurchases = 0;
+        receiverUserStat.numETHLandPurchases = 0;
+        receiverUserStat.numETHLandGiven = 0;
+        receiverUserStat.numDAILandGiven = 0;
+    }
+    if (event.params.token.toHex() == zeroAddress) {
+        receiverUserStat.numETHLandGiven ++;
+    } else {
+        receiverUserStat.numDAILandGiven ++;
+    }
+    receiverUserStat.save();
+
     let landSaleStat = LandSaleStat.load(event.address.toHex());
     if (!landSaleStat) {
         landSaleStat = new LandSaleStat(event.address.toHex())
@@ -127,20 +137,39 @@ export function handlePurchase(event: LandQuadPurchased): void {
         landSaleStat.numLandsFromETHPurchase = 0;
         landSaleStat.numUniquePurchaser = 0;
         landSaleStat.numUniqueReceiver = 0;
+        landSaleStat.numNewUniqueReceiver = 0;
+        landSaleStat.numNewUniquePurchaser = 0;
+        landSaleStat.num1x1Purchases = 0;
+        landSaleStat.num3x3Purchases = 0;
+        landSaleStat.num6x6Purchases = 0;
+        landSaleStat.num12x12Purchases = 0;
+        landSaleStat.num24x24Purchases = 0;
+        landSaleStat.totalETHSpent = BigDecimal.fromString("0");
+        landSaleStat.totalDAISpent = BigDecimal.fromString("0")
     }
-    let numLandsB = event.params.size.times(event.params.size);
+    let size = event.params.size.toI32();
     let numLands = event.params.size.times(event.params.size).toI32();
+    let tokenAmountPaid = BigDecimal.fromString(event.params.amountPaid.toString()).div(BigDecimal.fromString("1000000000000000000"));
     if (event.params.token.toHex() == zeroAddress) {
-        let numLandsBefore = landSaleStat.numLandsFromETHPurchase;
-        log.info('eth numLands {} {} {}', [event.params.size.toString(), BigInt.fromI32(numLands).toString(), numLandsB.toString()]);
+        landSaleStat.totalETHSpent = landSaleStat.totalETHSpent.plus(tokenAmountPaid);
         landSaleStat.numETHPurchases ++;
         landSaleStat.numLandsFromETHPurchase += numLands;
-        
-        let numLandsAfter = landSaleStat.numLandsFromETHPurchase;
-        log.info('numLandsFromETHPurchase {} {}', [BigInt.fromI32(numLandsBefore).toString(), BigInt.fromI32(numLandsAfter).toString()]);
     } else {
+        landSaleStat.totalDAISpent = landSaleStat.totalDAISpent.plus(tokenAmountPaid);
         landSaleStat.numDAIPurchases ++;
         landSaleStat.numLandsFromDAIPurchase += numLands;
+    }
+
+    if (size == 1) {
+        landSaleStat.num1x1Purchases ++;
+    } else if (size == 3) {
+        landSaleStat.num3x3Purchases ++;
+    } else if (size == 6) {
+        landSaleStat.num6x6Purchases ++;
+    } else if (size == 12) {
+        landSaleStat.num12x12Purchases ++;
+    } else if (size == 24) {
+        landSaleStat.num24x24Purchases ++;
     }
     
     if ((receiverStat.numDAILandPurchases == 1 && receiverStat.numETHLandPurchases == 0) || (receiverStat.numDAILandPurchases == 0 && receiverStat.numETHLandPurchases == 1)) {
@@ -149,6 +178,14 @@ export function handlePurchase(event: LandQuadPurchased): void {
 
     if ((buyerStat.numDAILandPurchases == 1 && buyerStat.numETHLandPurchases == 0) || (buyerStat.numDAILandPurchases == 0 && buyerStat.numETHLandPurchases == 1)) {
         landSaleStat.numUniquePurchaser ++;
+    }
+
+    if ((receiverUserStat.numDAILandPurchases == 1 && receiverUserStat.numETHLandPurchases == 0) || (receiverUserStat.numDAILandPurchases == 0 && receiverUserStat.numETHLandPurchases == 1)) {
+        landSaleStat.numNewUniqueReceiver ++;
+    }
+
+    if ((buyerUserStat.numDAILandPurchases == 1 && buyerUserStat.numETHLandPurchases == 0) || (buyerUserStat.numDAILandPurchases == 0 && buyerUserStat.numETHLandPurchases == 1)) {
+        landSaleStat.numNewUniquePurchaser ++;
     }
     
     landSaleStat.save();

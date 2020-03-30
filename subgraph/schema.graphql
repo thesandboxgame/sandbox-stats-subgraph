@@ -32,6 +32,22 @@ type LandReferral @entity {
   commissionRate: BigInt!
 }
 
+type UserStat @entity {
+  id: ID!
+  numDAILandPurchases: Int!
+  numETHLandPurchases: Int!
+  numDAILandGiven: Int!
+  numETHLandGiven: Int!
+}
+
+type SaleUserStat @entity {
+  id: ID!
+  numDAILandPurchases: Int!
+  numETHLandPurchases: Int!
+  numDAILandGiven: Int!
+  numETHLandGiven: Int!
+}
+
 type PurchaserStat @entity {
   id: ID!
   numDAILandPurchases: Int!
@@ -44,10 +60,19 @@ type LandSaleStat @entity {
   id: ID!
   numDAIPurchases: Int!
   numETHPurchases: Int!
+  totalETHSpent: BigDecimal!
+  totalDAISpent: BigDecimal!
   numLandsFromDAIPurchase: Int!
   numLandsFromETHPurchase: Int!
   numUniquePurchaser: Int!
   numUniqueReceiver: Int!
+  numNewUniqueReceiver: Int!
+  numNewUniquePurchaser: Int!
+  num1x1Purchases: Int!
+  num3x3Purchases: Int!
+  num6x6Purchases: Int!
+  num12x12Purchases: Int!
+  num24x24Purchases: Int!
 }
 
 type LandSaleReferralStat @entity {
