@@ -9,6 +9,7 @@ type Land @entity {
 
 type LandPurchase @entity {
   id: ID!
+  contractAddress: Bytes!
   topLeftX: Int!
   topLeftY: Int!
   size: BigInt!
@@ -22,10 +23,34 @@ type LandPurchase @entity {
 
 type LandReferral @entity {
   id: ID!
+  contractAddress: Bytes!
   referrer: Bytes!
   referee: Bytes!
   tokenAddress: Bytes!
   amount: BigInt!
   commission: BigInt!
   commissionRate: BigInt!
+}
+
+type PurchaserStat @entity {
+  id: ID!
+  numDAILandPurchases: Int!
+  numETHLandPurchases: Int!
+  numDAILandGiven: Int!
+  numETHLandGiven: Int!
+}
+
+type LandSaleStat @entity {
+  id: ID!
+  numDAIPurchases: Int!
+  numETHPurchases: Int!
+  numLandsFromDAIPurchase: Int!
+  numLandsFromETHPurchase: Int!
+  numUniquePurchaser: Int!
+  numUniqueReceiver: Int!
+}
+
+type LandSaleReferralStat @entity {
+  id: ID!
+  numReferrals: Int!
 }
