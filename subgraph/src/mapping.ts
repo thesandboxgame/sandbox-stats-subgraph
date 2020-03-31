@@ -23,7 +23,12 @@ export function handleTransfer(event: Transfer): void {
         land.x = idAsNumber % 408;
         land.y = i32(Math.floor(idAsNumber / 408));
         let metadataURI = contract.try_tokenURI(event.params._tokenId);
-        land.tokenURI = metadataURI.value;
+        if (metadataURI.reverted) {
+            log.debug('cannot get metadataURI from {}', [event.params._tokenId.toString()])
+            land.tokenURI = "error";
+        } else {
+            land.tokenURI = metadataURI.value;
+        }
     } else if(event.params._to.toHex() == zeroAddress) { //burnt
         store.remove('Land', id);
     }
@@ -145,7 +150,7 @@ export function handlePurchase(event: LandQuadPurchased): void {
         landSaleStat.num12x12Purchases = 0;
         landSaleStat.num24x24Purchases = 0;
         landSaleStat.totalETHSpent = BigDecimal.fromString("0");
-        landSaleStat.totalDAISpent = BigDecimal.fromString("0")
+        landSaleStat.totalDAISpent = BigDecimal.fromString("0");
     }
     let size = event.params.size.toI32();
     let numLands = event.params.size.times(event.params.size).toI32();
@@ -207,8 +212,18 @@ export function handleReferral(event: ReferralUsed): void {
     if (!landSaleReferralStat) {
         landSaleReferralStat = new LandSaleReferralStat(event.address.toHex())
         landSaleReferralStat.numReferrals = 0;
+        landSaleReferralStat.totalETHSentToReferrees = BigDecimal.fromString("0");
+        landSaleReferralStat.totalDAISentToReferrees = BigDecimal.fromString("0");
+    }
+
+    let tokenAmount = BigDecimal.fromString(event.params.commission.toString()).div(BigDecimal.fromString("1000000000000000000"));
+    if (event.params.token.toHex() == zeroAddress) {
+        landSaleReferralStat.totalETHSentToReferrees = landSaleReferralStat.totalETHSentToReferrees.plus(tokenAmount);
+    } else {
+        landSaleReferralStat.totalDAISentToReferrees = landSaleReferralStat.totalDAISentToReferrees.plus(tokenAmount);
     }
     landSaleReferralStat.numReferrals ++;
+    
     landSaleReferralStat.save();
 }
 

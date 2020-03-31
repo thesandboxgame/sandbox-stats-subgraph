@@ -48,14 +48,6 @@ type SaleUserStat @entity {
   numETHLandGiven: Int!
 }
 
-type PurchaserStat @entity {
-  id: ID!
-  numDAILandPurchases: Int!
-  numETHLandPurchases: Int!
-  numDAILandGiven: Int!
-  numETHLandGiven: Int!
-}
-
 type LandSaleStat @entity {
   id: ID!
   numDAIPurchases: Int!
@@ -78,4 +70,6 @@ type LandSaleStat @entity {
 type LandSaleReferralStat @entity {
   id: ID!
   numReferrals: Int!
+  totalETHSentToReferrees: BigDecimal!
+  totalDAISentToReferrees: BigDecimal!
 }
