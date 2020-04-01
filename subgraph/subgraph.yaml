@@ -1,6 +1,6 @@
 specVersion: 0.0.2
-description: SANDBOX-TOKENS
-repository: https://github.com/wighawag/sandbox-subgraph
+description: Stats for Sandbox Contracts
+repository: https://github.com/pixowl/sandbox-stats-subgraph
 schema:
   file: ./schema.graphql
 dataSources:

@@ -1,13 +1,12 @@
 {
-  "name": "sandbox-subgraph",
+  "name": "sandbox-stats-subgraph",
   "version": "0.1.0",
   "scripts": {
-    "create-local-graph": "graph create wighawag/testing --node http://127.0.0.1:8020",
+    "create-local-graph": "graph create pixowl/sandbox-stats --node http://127.0.0.1:8020",
     "codegen-graph": "graph codegen",
     "build-graph": "graph build",
-    "deploy-local-graph": "graph deploy wighawag/testing --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
-    "create-graph": "graph create wighawag/testing --node https://api.thegraph.com/deploy/",
-    "deploy-graph": "graph deploy wighawag/testing --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug"
+    "deploy-local-graph": "graph deploy pixowl/sandbox-stats --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "deploy-graph": "graph deploy pixowl/sandbox-stats --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.16.0",

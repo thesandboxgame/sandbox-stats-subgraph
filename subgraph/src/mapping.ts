@@ -1,6 +1,6 @@
 import { store, Address, Bytes, EthereumValue, BigInt, BigDecimal } from '@graphprotocol/graph-ts';
 import { Transfer, LandContract, Minter } from '../generated/Land/LandContract';
-import { LandSaleContract, ReferralUsed, LandQuadPurchased } from '../generated/LandSale/LandSaleContract';
+import { LandSaleContract, ReferralUsed, LandQuadPurchased } from '../generated/templates/LandSale/LandSaleContract';
 import { Land, LandReferral, LandPurchase, UserStat, SaleUserStat, LandSaleStat, LandSaleReferralStat } from '../generated/schema';
 
 import { LandSale } from '../generated/templates'

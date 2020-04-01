@@ -36,12 +36,24 @@ yarn deploy-local-graph
 ## example graphQL query
 ```
 {
-  Land {
-    tokenID
-    owner
-    tokenURI
-    x
-    y
+  landSaleStats {
+    id
+    totalETHSpent
+    totalDAISpent
+    numDAIPurchases
+    numETHPurchases
+    numLandsFromDAIPurchase
+    numLandsFromETHPurchase
+    numUniquePurchaser
+    numUniqueReceiver
+    numNewUniquePurchaser
+    numNewUniqueReceiver
+    num1x1Purchases
+    num3x3Purchases
+    num6x6Purchases
+    num12x12Purchases
+    num24x24Purchases
   }
 }
+
 ```
