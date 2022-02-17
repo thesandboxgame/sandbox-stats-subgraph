@@ -2,17 +2,23 @@
   "name": "sandbox-stats-subgraph",
   "version": "0.1.0",
   "scripts": {
-    "create-local-graph": "graph create pixowl/sandbox-stats --node http://127.0.0.1:8020",
-    "codegen-graph": "graph codegen",
-    "build-graph": "graph build",
-    "deploy-local-graph": "graph deploy pixowl/sandbox-stats --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
-    "deploy-graph": "dotenv -- cross-var graph deploy --access-token $THEGRAPH_TOKEN pixowl/sandbox-stats --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug"
+    "create": "graph create pixowl/sandbox-stats --node https://api.thegraph.com/deploy/",
+    "create-local": "graph create pixowl/sandbox-stats --node http://127.0.0.1:8020",
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "generate": "node scripts/generate.js",
+    "deploy": "dotenv -- cross-var graph deploy --product hosted-service",
+    "deploy:mainnet": "yarn codegen && yarn generate mainnet && yarn deploy pixowl/sandbox-stats",
+    "deploy:rinkeby": "yarn codegen && yarn generate rinkeby && yarn deploy pixowl/sandbox-stats-rinkeby",
+    "deploy-local": "graph deploy pixowl/sandbox-stats --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.16.0",
-    "@graphprotocol/graph-ts": "^0.16.0",
+    "@graphprotocol/graph-cli": "^0.26.0",
+    "@graphprotocol/graph-ts": "^0.24.1",
     "cross-var": "^1.1.0",
-    "dotenv": "^8.2.0",
-    "dotenv-cli": "^3.2.0"
+    "dotenv-cli": "^5.0.0",
+    "fs-extra": "^10.0.0",
+    "handlebars": "^4.7.7",
+    "rimraf": "^3.0.2"
   }
 }
