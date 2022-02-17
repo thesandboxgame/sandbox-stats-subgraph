@@ -11,7 +11,7 @@ let zeroAddress = '0x0000000000000000000000000000000000000000';
 
 export function handleTransfer(event: Transfer): void {
     let contract = LandContract.bind(event.address);
-    let id = `${event.address}_${event.params._tokenId.toString()}`;
+    let id = `${event.address.toHexString()}_${event.params._tokenId.toString()}`;
     let land = Land.load(id);
     if (land == null) {
         land = new Land(id);
